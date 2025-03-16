@@ -1,0 +1,14 @@
+# Node.js dependencies
+agent-js/node_modules/
+agent-js/.env
+
+# Node.js dependencies
+copilot-runtime/node_modules/
+copilot-runtime/.env
+copilot-runtime/dist
+
+
+ui/node_modules/
+ui/.next
+
+
