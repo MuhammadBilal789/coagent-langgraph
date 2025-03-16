@@ -1,6 +1,6 @@
 # Node.js dependencies
-agent-js/node_modules/
-agent-js/.env
+agent-ts/node_modules/
+agent-ts/.env
 
 # Node.js dependencies
 copilot-runtime/node_modules/

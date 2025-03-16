@@ -18,7 +18,7 @@ Ensure you are in the `coagent-langgraph/` directory before proceeding.
 
 ### Install Dependencies
 ```sh
-cd agent-js
+cd agent-ts
 npm install
 ```
 
@@ -29,9 +29,9 @@ OPENAI_API_KEY=YOUR_OPENAI_API_KEY_HERE
 ```
 
 ### Start the Agent
-Run the following command to host the agent locally:
+Run the following command to host the agent locally using docker
 ```sh
-npx @langchain/langgraph-cli dev --host localhost --port 8000
+npx @langchain/langgraph-cli up
 ```
 
 ---
