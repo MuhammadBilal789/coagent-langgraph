@@ -8,6 +8,7 @@ import { useState } from "react";
 // It holds a record of towns with their descriptions
 type AgentState = {
   towns: Record<string, string>,
+  agentName: string
 };
 
 export default function Home() {
@@ -30,6 +31,7 @@ function FamousTowns() {
     name: "sample_agent",
     initialState: {
       towns: {},
+      agentName: "",
     }
   });
 
@@ -45,13 +47,21 @@ function FamousTowns() {
 
   // Define the Copilot action to select famous towns
   useCopilotAction({ 
-    name: "getFamousTowns",
+    name: "get_famous_towns",
     available: "remote",
     description: "Displays a list of famous towns with checkboxes and provides details about selected towns.",
-    parameters: [],
-    renderAndWaitForResponse: ({ respond }) => {
+    parameters: [
+      {
+        name: "town_limit",
+        type: "number",
+        description: "the total town limit in number",
+      },
+    ],
+    renderAndWaitForResponse: ({ args, respond }) => {
+      const townLimit = args.town_limit || 5
       const [selectedTowns, setSelectedTowns] = useState<string[]>([]);
-
+      const [displayedTowns, setDisplayedTowns] = useState<[string, string][]>([]);
+      
       // Define the list of available towns with descriptions
       const towns: Record<string, string> = {
         "Paris": "Eiffel Tower, art, and fashion.",
@@ -65,6 +75,11 @@ function FamousTowns() {
         "Istanbul": "Bridges Europe & Asia, rich culture.",
         "Rio de Janeiro": "Carnival, beaches, and Christ statue."
       };
+
+      const availableTowns = displayedTowns.length ? displayedTowns : Object.entries(towns)
+        .slice(0, townLimit)
+        .filter(([town]) => !(state.towns && state.towns[town]));
+
 
       // Function to handle checkbox changes
       const handleCheckboxChange = (town: string) => {
@@ -84,6 +99,7 @@ function FamousTowns() {
           }))
         };
 
+        setDisplayedTowns(availableTowns);
         respond?.(JSON.stringify(formattedResponse)); // Send response
       };
 
@@ -91,8 +107,7 @@ function FamousTowns() {
         <div className="p-4 rounded-lg shadow-md bg-white w-96">
           <h3 className="text-lg font-semibold mb-3">Select Famous Towns</h3>
           <div className="space-y-2">
-          {Object.entries(towns)
-            .filter(([town]) => !(state.towns && state.towns[town])) // Ensure state.towns is defined
+          {availableTowns
             .map(([town, description]) => (
                 <div key={town} className="flex items-center gap-3 p-2 border rounded-md shadow-sm">
                   <input 
@@ -120,6 +135,52 @@ function FamousTowns() {
       );
     },
   });
+
+  useCopilotAction({ 
+    name: "get_agent_name",
+    available: "remote",
+    description: "Responds when the user asks for the bot's name.",
+    parameters: [],
+    renderAndWaitForResponse: ({ respond }) => {
+      const [agentName, setAgentName] = useState<string>("");
+
+      // Function to handle input change
+      const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setAgentName(event.target.value);
+      };
+
+      // Function to handle the button click
+      const handleSubmission = () => {
+        const formattedResponse = {
+          agentName
+        };
+
+        respond?.(JSON.stringify(formattedResponse)); // Send response
+      };
+
+      return (
+        <div className="p-4 w-96">
+          <h3 className="text-base font-medium mb-2">What would you like to call me?</h3>
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              value={agentName}
+              onChange={handleInputChange}
+              placeholder="Enter a name"
+              className="flex-1 p-2 border rounded"
+            />
+            <button 
+              onClick={handleSubmission}
+              className="bg-blue-600 text-white py-2 px-4 rounded"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      );
+    },
+  });
+
 
   return (
     <div className="h-screen w-screen flex flex-col items-center p-10">

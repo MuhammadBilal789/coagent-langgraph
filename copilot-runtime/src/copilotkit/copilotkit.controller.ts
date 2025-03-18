@@ -1,4 +1,5 @@
 import { All, Controller, Req, Res } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   CopilotRuntime,
   copilotRuntimeNestEndpoint,
@@ -10,27 +11,36 @@ import OpenAI from 'openai';
 
 @Controller()
 export class CopilotkitController {
-  private readonly openai = new OpenAI({
-    apiKey: '',
-  });
+  private readonly openai: OpenAI;
+  private readonly runtime: CopilotRuntime;
+  private readonly llmAdapter: OpenAIAdapter;
 
-  private readonly llmAdapter = new OpenAIAdapter({ openai: this.openai, model: 'gpt-4o-mini' });
+  constructor(private readonly configService: ConfigService) {
+    this.openai = new OpenAI({
+      apiKey: this.configService.get<string>('OPENAI_API_KEY') || '',
+    });
 
-  private readonly runtime = new CopilotRuntime({
-    remoteEndpoints: [
-      langGraphPlatformEndpoint({
-        deploymentUrl:
-          process.env.LANGGRAPH_DEPLOYMENT_URL || 'http://localhost:8123',
-        langsmithApiKey: process.env.LANGSMITH_API_KEY || '',
-        agents: [
-          {
-            name: 'sample_agent',
-            description: 'A helpful LLM agent.',
-          },
-        ],
-      }),
-    ],
-  });
+    this.llmAdapter = new OpenAIAdapter({
+      openai: this.openai,
+      model: 'gpt-4o-mini',
+    });
+
+    this.runtime = new CopilotRuntime({
+      remoteEndpoints: [
+        langGraphPlatformEndpoint({
+          deploymentUrl:
+            this.configService.get<string>('LANGGRAPH_DEPLOYMENT_URL', ''),
+          langsmithApiKey: this.configService.get<string>('LANGSMITH_API_KEY', ''),
+          agents: [
+            {
+              name: 'sample_agent',
+              description: 'A helpful LLM agent.',
+            },
+          ],
+        }),
+      ],
+    });
+  }
 
   @All('/copilotkit')
   copilotkit(@Req() req: Request, @Res() res: Response) {

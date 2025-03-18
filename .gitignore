@@ -12,3 +12,5 @@ ui/node_modules/
 ui/.next
 
 
+# LangGraph API
+agent-ts/.langgraph_api
