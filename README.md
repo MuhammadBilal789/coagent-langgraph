@@ -23,13 +23,16 @@ npm install
 ```
 
 ### Configure Environment Variables
-Create a `.env` file inside the `./agent-js` directory with the following content:
-```
-OPENAI_API_KEY=YOUR_OPENAI_API_KEY_HERE
-```
+
+- Navigate to the `src` directory
+
+- Open `agent.ts` file and update the `apiKey` variable
+---
 
 ### Start the Agent
-Run the following command to host the agent locally using docker
+Navigate back to `agent-ts` folder
+
+Run the following command to host the agent locally using docker.
 ```sh
 npx @langchain/langgraph-cli up
 ```
@@ -43,6 +46,18 @@ npx @langchain/langgraph-cli up
 cd ./copilot-runtime
 npm install
 ```
+
+
+### Configuring Environment Variables  
+
+- Copy the `.env.example` file to create a new `.env` file
+   
+- Update the required keys in the `.env` file.  
+
+- Export the `OPENAI_API_KEY` in your terminal:  
+   ```sh
+   export OPENAI_API_KEY=sk-proj-****
+   ```  
 
 ### Start the Copilot Runtime
 Start the copilot runtime in development mode:

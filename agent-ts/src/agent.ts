@@ -10,11 +10,12 @@ import { SystemMessage } from "@langchain/core/messages";
 const llm = new ChatOpenAI({
     model: "gpt-4o-mini",
     temperature: 0,
-    apiKey: "",
+    apiKey: "YOUR API KEY HERE",
 });
 
 // Define graph state with message annotations
 const AgentStateAnnotation = Annotation.Root({
+  // ...MessagesAnnotation.spec,
     ...CopilotKitStateAnnotation.spec,
     agentName: Annotation<string>(),
     towns: Annotation<Record<string, string>>(),
